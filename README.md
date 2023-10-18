@@ -101,7 +101,7 @@ All code files, directory structure and instructions are available at https://gi
 - Download Rds partial_dims_15_res_0.3_LC_cohort1.Rds, lesion_core_dims_10_res_0.2.rds and lesion_core_cyto_only_dims_10_res_0.5.Rds from [10.5281/zenodo.10018477](https://zenodo.org/records/10018477) into your working directory
 - Start with downstream_analysis.Rmd
 - Please run individual chunks to first loading Seurat objects, then proceeding to re-plot figures in the manuscript. Each chunk and the individual lines indicates which panel is being plotted
-- PDF/CSV files are created within a folder named as 'R' or 'markers' in your working directory when the code is executed. If the folders are already present, the code will simply ignore it with a warning
+- PDF/CSV files are created within a folder named as 'R' or 'R\markers' in your working directory when the code is executed. If the folders are already present, the code will simply ignore it with a warning
 - This file will take approximately 10-15 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
 ## License
