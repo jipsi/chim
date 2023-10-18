@@ -91,13 +91,16 @@ loaded via a namespace (and not attached):
 
 #### 2. To see how the data is normalised, integrated and clustered please look at prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. 
 
-##### Option1 : Start from scratch using raw 10x files (CURRENTLY UNAVAILABLE as RAW data will only be made available post publication)
+##### Option1 : Start from scratch using raw 10x files (CURRENTLY unavailable as RAW data will only be made available post publication)
 - Download all samples/10x files from GSMXXXX into V*/'sample_name'/
 - Start with prepare_rds.Rmd
+- This file will take approximately 2 hours to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
 ##### Option2 : Start from prepared Rds containing primary clustering analysis
-- Download Rds partial_dims_15_res_0.3_LC_cohort1.Rds, lesion_core_dims_10_res_0.2.rds and lesion_core_cyto_only_dims_10_res_0.5.Rds from ZENODOXXXXXX into your working directory
+- Download Rds partial_dims_15_res_0.3_LC_cohort1.Rds, lesion_core_dims_10_res_0.2.rds and lesion_core_cyto_only_dims_10_res_0.5.Rds from 10.5281/zenodo.10018477 into your working directory
 - Start with downstream_analysis.Rmd
+- Please run individual chunks to first loading Seurat objects, then proceeding to re-plot figures in the manuscript. Each chunk and the individual lines indicates which panel is being plotted
+- PDF/CSV files are created within a folder named as 'R' or 'markers' in your working directory when the code is executed. If the folders are already present, the code will simply ignore it with a warning
 - This file will take approximately 10-15 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
 ## License
