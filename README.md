@@ -1,5 +1,4 @@
-# chim
-Controlled Human Challenge Model (Cutaneous Leishmaniasis)
+# Controlled Human Challenge Model for Cutaneous Leishmaniasis (CHIM)
 
 Vivak Parkash1, Helen Ashwin1, Shoumit Dey1, Jovana Sadlova2, Barbora Vojtkova2, Katrien Van Bocxlaer1,3, Rebecca Wiggins1, 
 David Thompson4 Nidhi Sharma Dey1, Charles L. Jaffe5, Eli Schwartz6, Petr Volf2, Charles J. N. Lacey1, 
