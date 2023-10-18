@@ -21,10 +21,10 @@ The leishmaniases are globally important parasitic diseases for which no human v
 ## Software requirements: <br/>
 
 ### OS
-- Tested on Windows: Windows 10 x64 (For all R based code)
-Code will however run on Mac and Linux operating systems as well
+- Tested on Windows: Windows 10 x64 (For all R based code)<br/>
+Code will however run on Mac and Linux operating systems as well<br/>
 
-### Software 
+### Software <br/>
 
 
 #### 1. R version 4.2.2
