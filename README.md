@@ -5,20 +5,20 @@ Vivak Parkash<sup>1</sup>, Helen Ashwin<sup>1</sup>, Shoumit Dey<sup>1</sup>, Jo
 David Thompson<sup>4</sup>, Nidhi Sharma Dey<sup>1</sup>, Charles L. Jaffe<sup>5</sup>, Eli Schwartz<sup>6</sup>, Petr Volf<sup>2</sup>, Charles J. N. Lacey<sup>1</sup>, 
 Alison M. Layton<sup>1,3,^</sup> and Paul M. Kaye<sup>1,3,^</sup>
 
-<sup>1</sup>York Biomedical Research Institute, Hull York Medical School, University of York, York, UK
-<sup>2</sup>Department of Parasitology, Faculty of Science, Charles University, Viničná 7, Prague, Czech Republic
-<sup>3</sup>Skin Research Centre, Hull York Medical School, York, UK 
-<sup>4</sup>York and Scarborough Teaching Hospitals NHS Foundation Trust, York, UK  
-<sup>5</sup>Department of Microbiology and Molecular Genetics, Kuvin Center for the Study of Infectious and Tropical Diseases, IMRIC, The Hebrew University – Hadassah Medical School, Jerusalem, Israel
-<sup>6</sup>The Center for Geographic Medicine and Tropical Diseases, Chaim Sheba Medical Center, and The School of Medicine, Tel Aviv University, Israel.
+<sup>1</sup>York Biomedical Research Institute, Hull York Medical School, University of York, York, UK<br>
+<sup>2</sup>Department of Parasitology, Faculty of Science, Charles University, Viničná 7, Prague, Czech Republic<br>
+<sup>3</sup>Skin Research Centre, Hull York Medical School, York, UK <br>
+<sup>4</sup>York and Scarborough Teaching Hospitals NHS Foundation Trust, York, UK  <br>
+<sup>5</sup>Department of Microbiology and Molecular Genetics, Kuvin Center for the Study of Infectious and Tropical Diseases, IMRIC, The Hebrew University – Hadassah Medical School, Jerusalem, Israel<br>
+<sup>6</sup>The Center for Geographic Medicine and Tropical Diseases, Chaim Sheba Medical Center, and The School of Medicine, Tel Aviv University, Israel.<br>
+<br>
 
+#### <sup>^</sup>Corresponding authors: paul.kaye@york.ac.uk and alison.layton@hyms.ac.uk<br>
+<br>
+### Summary: <br>
+The leishmaniases are globally important parasitic diseases for which no human vaccines are currently available. To facilitate vaccine development, we established a controlled human infection model of sand fly-transmitted cutaneous leishmaniasis caused by L. major. The primary objective was to demonstrate effectiveness (attack rate) and safety, whereas secondary objectives focused on defining immune responses in the developing lesion. We exposed 14 participants to infected sand flies and estimated an attack rate of 64%, rising to 82% for participants with confirmed bites. Lesion development was terminated by therapeutic biopsy, with three participants receiving adjunctive cryotherapy. No severe or serious adverse events were recorded, and all participants were lesion-free at long-term (>12 month) follow up.  Analysis of skin biopsies using spatial transcriptomics generated the first comprehensive map of cytokine/chemokine expression in human CL lesions, revealing discrete immune niches.  This controlled human infection model offers opportunities for rapid vaccine candidate selection and a greater understanding of immune-mediated protection and pathology.<br>
 
-#### <sup>^</sup>Corresponding authors: paul.kaye@york.ac.uk and alison.layton@hyms.ac.uk
-
-### Summary: 
-The leishmaniases are globally important parasitic diseases for which no human vaccines are currently available. To facilitate vaccine development, we established a controlled human infection model of sand fly-transmitted cutaneous leishmaniasis caused by L. major. The primary objective was to demonstrate effectiveness (attack rate) and safety, whereas secondary objectives focused on defining immune responses in the developing lesion. We exposed 14 participants to infected sand flies and estimated an attack rate of 64%, rising to 82% for participants with confirmed bites. Lesion development was terminated by therapeutic biopsy, with three participants receiving adjunctive cryotherapy. No severe or serious adverse events were recorded, and all participants were lesion-free at long-term (>12 month) follow up.  Analysis of skin biopsies using spatial transcriptomics generated the first comprehensive map of cytokine/chemokine expression in human CL lesions, revealing discrete immune niches.  This controlled human infection model offers opportunities for rapid vaccine candidate selection and a greater understanding of immune-mediated protection and pathology.
-
-## Software requirements: 
+## Software requirements: <br>
 
 ### OS
 - Tested on Windows: Windows 10 x64 (For all R based code)
