@@ -1,19 +1,19 @@
 # 
 # Controlled Human Challenge Model for Cutaneous Leishmaniasis (CHIM)
 
-Vivak Parkash1, Helen Ashwin1, Shoumit Dey1, Jovana Sadlova2, Barbora Vojtkova2, Katrien Van Bocxlaer1,3, Rebecca Wiggins1, 
-David Thompson4 Nidhi Sharma Dey1, Charles L. Jaffe5, Eli Schwartz6, Petr Volf2, Charles J. N. Lacey1, 
-Alison M. Layton1,3 * and Paul M. Kaye1,3 *.
+Vivak Parkash<sup>1</sup>, Helen Ashwin<sup>1</sup>, Shoumit Dey<sup>1</sup>, Jovana Sadlova<sup>2</sup>, Barbora Vojtkova<sup>2</sup>, Katrien Van Bocxlaer<sup>1,3</sup>, Rebecca Wiggins<sup>1</sup>, 
+David Thompson<sup>4</sup>, Nidhi Sharma Dey<sup>1</sup>, Charles L. Jaffe<sup>5</sup>, Eli Schwartz<sup>6</sup>, Petr Volf<sup>2</sup>, Charles J. N. Lacey<sup>1</sup>, 
+Alison M. Layton<sup>1,3,'*'</sup> and Paul M. Kaye<sup>1,3'*'</sup>
 
-1 York Biomedical Research Institute, Hull York Medical School, University of York, York, UK
-2 Department of Parasitology, Faculty of Science, Charles University, Viničná 7, Prague, Czech Republic
-3 Skin Research Centre, Hull York Medical School, York, UK 
-4 York and Scarborough Teaching Hospitals NHS Foundation Trust, York, UK  
-5 Department of Microbiology and Molecular Genetics, Kuvin Center for the Study of Infectious and Tropical Diseases, IMRIC, The Hebrew University – Hadassah Medical School, Jerusalem, Israel
-6 The Center for Geographic Medicine and Tropical Diseases, Chaim Sheba Medical Center, and The School of Medicine, Tel Aviv University, Israel.
+<sup>1</sup>York Biomedical Research Institute, Hull York Medical School, University of York, York, UK
+<sup>2</sup>Department of Parasitology, Faculty of Science, Charles University, Viničná 7, Prague, Czech Republic
+<sup>3</sup>Skin Research Centre, Hull York Medical School, York, UK 
+<sup>4</sup>York and Scarborough Teaching Hospitals NHS Foundation Trust, York, UK  
+<sup>5</sup>Department of Microbiology and Molecular Genetics, Kuvin Center for the Study of Infectious and Tropical Diseases, IMRIC, The Hebrew University – Hadassah Medical School, Jerusalem, Israel
+<sup>6</sup>The Center for Geographic Medicine and Tropical Diseases, Chaim Sheba Medical Center, and The School of Medicine, Tel Aviv University, Israel.
 
 
-#### *Corresponding authors: paul.kaye@york.ac.uk and alison.layton@hyms.ac.uk
+#### <sup>*</sup>Corresponding authors: paul.kaye@york.ac.uk and alison.layton@hyms.ac.uk
 
 ### Summary: 
 The leishmaniases are globally important parasitic diseases for which no human vaccines are currently available. To facilitate vaccine development, we established a controlled human infection model of sand fly-transmitted cutaneous leishmaniasis caused by L. major. The primary objective was to demonstrate effectiveness (attack rate) and safety, whereas secondary objectives focused on defining immune responses in the developing lesion. We exposed 14 participants to infected sand flies and estimated an attack rate of 64%, rising to 82% for participants with confirmed bites. Lesion development was terminated by therapeutic biopsy, with three participants receiving adjunctive cryotherapy. No severe or serious adverse events were recorded, and all participants were lesion-free at long-term (>12 month) follow up.  Analysis of skin biopsies using spatial transcriptomics generated the first comprehensive map of cytokine/chemokine expression in human CL lesions, revealing discrete immune niches.  This controlled human infection model offers opportunities for rapid vaccine candidate selection and a greater understanding of immune-mediated protection and pathology.
@@ -83,11 +83,11 @@ loaded via a namespace (and not attached):
 
 #### 4. RUNNING TIME: All R files run sequentially will take approximately 2 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
-#### 5. Additional files required for running code available on XXXX
+#### 5. Additional files required for running code available on 10.5281/zenodo.10018477
 
 ## Code to review/analyse the data and/or to replicate the figures in the manuscript 
 
-#### 1. Code will attempt to create folder structure as shown in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders (there is no need to create these folders manually). Download all Rds files from https://zenodo.org/record/7638456 to your working folder as further mentioned in the following steps.
+#### 1. Code will attempt to create folder structure as shown in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders (there is no need to create these folders manually). Download all Rds files from 10.5281/zenodo.10018477 to your working folder as further mentioned in the following steps.
 
 #### 2. To see how the data is normalised, integrated and clustered please look at prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. 
 
