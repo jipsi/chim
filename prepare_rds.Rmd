@@ -10,7 +10,7 @@ output: html_document
 #Load packages
 library(Seurat)
 #define study path
-save_path <- "D:/GoogleDrive/spatial_leishmania/spatial/_MANUSCRIPTS/CHIM1/GITHUB_PLAYGROUND/"#"Add your path here"
+save_path <- "Add your path here"
 setwd(save_path)
 
 if (!file.exists(paste0(getwd(), "/R"))){

@@ -13,7 +13,7 @@ library(EnhancedVolcano)
 library(sqldf)
 library(dplyr)
 #define study path
-save_path <- "D:/GoogleDrive/spatial_leishmania/spatial/_MANUSCRIPTS/CHIM1/GITHUB_PLAYGROUND/"#"Add your path here"
+save_path <- "Add your path here"
 setwd(save_path)
 
 if (!file.exists(paste0(getwd(), "/R"))){
@@ -161,8 +161,8 @@ print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minu
 # Start the clock!
 ptm <- proc.time()
 #PLotting Figure 6a
-pdf(paste0(save_path, "Fig6a.pdf"), height = 5, width = 20)
-  SpatialDimPlot(cluster2only, images = "LC_403_1C2", crop = F, ncol = 2, image.alpha = 0)
+pdf(paste0(save_path, "Fig6a.pdf"), height = 5, width = 7)
+  SpatialDimPlot(cluster2only, images = "LC_403_1C2", crop = F, ncol = 1, image.alpha = 0.6, group.by = "seurat_clusters", pt.size.factor = 1.2)
 dev.off()
 #PLotting Figure 6b
 pdf(paste0(save_path, "cluster2only_markers.pdf"), height = 3, width = 7)
