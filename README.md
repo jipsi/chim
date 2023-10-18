@@ -90,7 +90,7 @@ All code files, directory structure and instructions are available at https://gi
 
 #### 1. Code will attempt to create folder structure as shown in the repository. Please maintain folder structure as per the repository for the plots/Rds files to save in the correct folders (there is no need to create these folders manually). Download all Rds files from [10.5281/zenodo.10018477](https://zenodo.org/records/10018477) to your working folder as further mentioned in the following steps.
 
-#### 2. To see how the data is normalised, integrated and clustered please look at prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. 
+#### 2. To see how the data is normalised, integrated and clustered please look at prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. All instructions and R source files (.Rmd files) are available at https://github.com/jipsi/chim 
 
 ##### Option1 : Start from scratch using raw 10x files (CURRENTLY unavailable as RAW data will only be made available post publication)
 - Download all samples/10x files from GSMXXXX into V*/'sample_name'/
