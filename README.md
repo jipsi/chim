@@ -1,5 +1,5 @@
 # 
-# Controlled Human Challenge Model for Cutaneous Leishmaniasis (CHIM)
+
 # Safety, effectiveness, and skin immune response in a controlled human infection model of sand fly transmitted cutaneous leishmaniasis.
 Vivak Parkash<sup>1</sup>, Helen Ashwin<sup>1</sup>, Shoumit Dey<sup>1</sup>, Jovana Sadlova<sup>2</sup>, Barbora Vojtkova<sup>2</sup>, Katrien Van Bocxlaer<sup>1,3</sup>, Rebecca Wiggins<sup>1</sup>, 
 David Thompson<sup>4</sup>, Nidhi Sharma Dey<sup>1</sup>, Charles L. Jaffe<sup>5</sup>, Eli Schwartz<sup>6</sup>, Petr Volf<sup>2</sup>, Charles J. N. Lacey<sup>1</sup>, 
@@ -18,7 +18,7 @@ Alison M. Layton<sup>1,3,^</sup> and Paul M. Kaye<sup>1,3,^</sup>
 ### Summary: <br>
 The leishmaniases are globally important parasitic diseases for which no human vaccines are currently available. To facilitate vaccine development, we established a controlled human infection model of sand fly-transmitted cutaneous leishmaniasis caused by L. major. The primary objective was to demonstrate effectiveness (attack rate) and safety, whereas secondary objectives focused on defining immune responses in the developing lesion. We exposed 14 participants to infected sand flies and estimated an attack rate of 64%, rising to 82% for participants with confirmed bites. Lesion development was terminated by therapeutic biopsy, with three participants receiving adjunctive cryotherapy. No severe or serious adverse events were recorded, and all participants were lesion-free at long-term (>12 month) follow up.  Analysis of skin biopsies using spatial transcriptomics generated the first comprehensive map of cytokine/chemokine expression in human CL lesions, revealing discrete immune niches.  This controlled human infection model offers opportunities for rapid vaccine candidate selection and a greater understanding of immune-mediated protection and pathology.<br>
 
-## Software requirements: <br>
+## Software requirements: <br/>
 
 ### OS
 - Tested on Windows: Windows 10 x64 (For all R based code)
