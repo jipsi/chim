@@ -1,6 +1,6 @@
 # 
 # Controlled Human Challenge Model for Cutaneous Leishmaniasis (CHIM)
-
+# Safety, effectiveness, and skin immune response in a controlled human infection model of sand fly transmitted cutaneous leishmaniasis.
 Vivak Parkash<sup>1</sup>, Helen Ashwin<sup>1</sup>, Shoumit Dey<sup>1</sup>, Jovana Sadlova<sup>2</sup>, Barbora Vojtkova<sup>2</sup>, Katrien Van Bocxlaer<sup>1,3</sup>, Rebecca Wiggins<sup>1</sup>, 
 David Thompson<sup>4</sup>, Nidhi Sharma Dey<sup>1</sup>, Charles L. Jaffe<sup>5</sup>, Eli Schwartz<sup>6</sup>, Petr Volf<sup>2</sup>, Charles J. N. Lacey<sup>1</sup>, 
 Alison M. Layton<sup>1,3,^</sup> and Paul M. Kaye<sup>1,3,^</sup>
