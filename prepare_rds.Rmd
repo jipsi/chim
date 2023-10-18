@@ -1,0 +1,200 @@
+ ---
+title: "SD22.8.6"
+author: "Shoumit Dey"
+date: "17/10/2023"
+output: html_document
+---
+1. Load packages
+2. Set paths
+```{r message=FALSE}
+#Load packages
+library(Seurat)
+#define study path
+save_path <- "D:/GoogleDrive/spatial_leishmania/spatial/_MANUSCRIPTS/CHIM1/GITHUB_PLAYGROUND/"#"Add your path here"
+setwd(save_path)
+
+if (!file.exists(paste0(getwd(), "/R"))){
+  dir.create(paste0(getwd(), "/R"))
+}
+
+save_path <- paste0(getwd(), "/R/")
+
+#Folder where all samples are stored individually within
+#a folder name starting with V* within which a sample h5 file
+#(named as *sample*.h5) and its 'spatial folder' should reside 
+study_path<-"Folder path for where the RAW files are"
+
+
+#remove patient 404 Cs and 405 Cs
+all_samples <-c("402_3C1","402_3C2","402_3L1","402_3R1","403_1C1","403_1C2","403_1L1","403_1L2","013_8C1", "013_8C2", "013_8L1", "013_8R1")
+sample_group <- c("lesion","lesion","healthy","healthy","lesion","lesion","healthy","healthy","lesion","lesion","healthy","healthy")
+
+#create sub-directories
+dir.create(paste0(save_path, "markers"))
+
+```
+Load all .h5 samples
+- Change this subsequently to expression matrix and build stats for generic usage
+```{r loadSeurath5}
+
+seuratSpatial <- list()
+counter<-1
+for (sample in all_samples){
+  sample_dir <- Sys.glob(paste0(study_path,"V*/*",sample,"/"))
+  sample_path <- Sys.glob(paste0(study_path,"V*/*",sample,"/","*.h5"))
+  sample_path_file <- tail(strsplit(sample_path, split = "/")[[1]], n = 1)
+  #creating a text indicator for sample origin - eg 'key' LC_402_3C1
+  key <- paste0("LC_",sample)
+  seuratSpatial[[key]]<-Load10X_Spatial(
+                                        sample_dir,
+                                        filename = sample_path_file,
+                                        assay = "Spatial",
+                                        slice = key,
+                                        filter.matrix = TRUE,
+                                        to.upper = FALSE
+                                      )
+  #creating a text indicator for sample origin - example LC_402_3C1 is 
+  #volunteer 1 from leish challenge cohort
+  seuratSpatial[[key]]$orig.ident <- paste0("LC_",sample)
+  seuratSpatial[[key]]$group <- sample_group[[counter]]
+  counter<-counter+1
+}
+
+```
+Normalise, scale and find variable features withing each individual sample
+```{r SCTRansform, warning=FALSE}
+
+#Normalise, scale and find variable features withing each individual sample
+# and regress counts based on nCount_Spatial and nFeature_Spatial
+for(sample in all_samples){
+  key <- paste0("LC_",sample)
+  seuratSpatial[[key]] <- SCTransform(seuratSpatial[[key]], assay = "Spatial", verbose = FALSE, vars.to.regress = c("nCount_Spatial", "nFeature_Spatial"))
+}
+
+```
+Integrate all samples
+```{r integrate_workflow_for_spatial}
+
+features <- SelectIntegrationFeatures(object.list = seuratSpatial, nfeatures = 3000)
+seuratSpatial <- PrepSCTIntegration(object.list = seuratSpatial, anchor.features = features)
+
+immune.anchors <- FindIntegrationAnchors(object.list = seuratSpatial, normalization.method = "SCT", anchor.features = features)
+
+
+integrated_LC_cohort1 <- IntegrateData(anchorset = immune.anchors, normalization.method = "SCT")
+
+rm(seuratSpatial)
+```
+Cluster integrated samples to find common clusters for underlying skin morphology in health and sand-fly bite-related, or infiltration-related clusters such as 
+lesional core, epidermis, dermis, sandfly bite site etc.
+```{r clustering}
+#run PCA
+integrated_LC_cohort1 <- RunPCA(integrated_LC_cohort1, assay = "integrated", verbose = FALSE)
+#Visualise variability explained per PC
+ElbowPlot(integrated_LC_cohort1)
+#set pca dimensions to use and 
+#resolution for cluster identification
+#Please note various combinations were 
+#of PCs and resolution was trialed prior
+#selecting based on how well 1:n PCs represented
+#the overall variability in the data; and how 
+#the underlying morphology was representing by 
+#clusterings parameters.
+dims=15
+res=0.3
+#identify neighbours in PC 1:dims dimensions
+integrated_LC_cohort1 <- FindNeighbors(integrated_LC_cohort1, reduction = "pca", dims = 1:dims)
+#Identify clusters (Louvain)
+integrated_LC_cohort1 <- FindClusters(integrated_LC_cohort1, verbose = FALSE, resolution = res)
+#Run UMAP using in PC 1:dims dimensions
+integrated_LC_cohort1 <- RunUMAP(integrated_LC_cohort1, reduction = "pca", dims = 1:dims)
+#Run UMAP using in PC 1:dims dimensions
+integrated_LC_cohort1 <- RunTSNE(integrated_LC_cohort1, reduction = "pca", dims = 1:dims)
+
+
+#write proportion per cluster type across all samples
+write.csv(prop.table(table(Idents(integrated_LC_cohort1), integrated_LC_cohort1$orig.ident), margin = 2), paste0(save_path, "/markers/", "_ident_proportions_sample.csv"), row.names =TRUE)
+#reordering levels
+integrated_LC_cohort1$group <- factor(integrated_LC_cohort1$group, levels = c("healthy","lesion"))
+#save rds file
+saveRDS(integrated_LC_cohort1, paste0(save_path, "partial_dims_",dims,"_res_",res,"LC_cohort1.Rds"))
+```
+Sub-Cluster integrated samples but those only identified as overlapping the core lesion in above i.e. cluster 2 as saved in partial_dims_15_res_0.3_LC_cohort1.Rds
+```{r sub_clustering_the_core_lesion}
+#fetch spots identified as 'lesion core' or cluster 2
+cluster2only <- subset(integrated_LC_cohort1, idents = 2)
+DefaultAssay(cluster2only)<-"integrated"
+#select sub-clustering PCs (1:x) and sub-clustering resolution 
+subclust_dims <- 10
+subclust_res <- 0.2
+#run PCA
+cluster2only <- RunPCA(cluster2only, verbose = FALSE)
+#Visualise variability explained per PC
+ElbowPlot(cluster2only)
+#identify neighbours in PC 1:subclust_dims dimensions
+cluster2only <- FindNeighbors(cluster2only, reduction = "pca", dims = 1:subclust_dims)
+#Identify clusters (Louvain)
+cluster2only <- FindClusters(cluster2only, verbose = FALSE, resolution=subclust_res)
+#Run UMAP using in PC 1:subclust_dims dimensions
+cluster2only <- RunUMAP(cluster2only, reduction = "pca", dims = 1:subclust_dims)
+#Run t-SNE using in PC 1:subclust_dims dimensions  
+cluster2only <- RunTSNE(cluster2only, reduction = "pca", dims = 1:subclust_dims)
+#Prepare for downstream DE analysis
+cluster2only <- PrepSCTFindMarkers(cluster2only)
+#save Seurat object as Rds file
+saveRDS(cluster2only,paste0(save_path, "lesion_core_dims_",subclust_dims,"_res_",subclust_res,".Rds"))
+```
+
+```{r cyto_genes}
+#fetch genes that were used for re-clustering in next step
+genes<-rownames(integrated_LC_cohort1)
+ccls_ils_tnfs<-c(grep("^CCL", genes,value = T), grep("^CXC", genes,value = T), grep("^TNF", genes,value = T), grep("^IL", genes,value = T), grep("^IFN", genes,value = T))
+```
+Sub-Cluster integrated samples but those only identified as overlapping the core lesion in above i.e. cluster 2 as saved in partial_dims_15_res_0.3_LC_cohort1.Rds
+```{r re_clustering_by_cytokines_for_lesion_core}
+#select sub-clustering PCs (1:x) and sub-clustering resolution 
+cyto_dims=10
+cyto_res=0.5
+#creating a new object for clearer flow - please note this can be easily
+#achieved in the already loaded object and the new clustering information
+#can be stored in new meta data
+lesion_cluster_by_cytokines <- cluster2only
+#Change assay to SCT
+DefaultAssay(lesion_cluster_by_cytokines) <- "SCT"
+#Scale data
+lesion_cluster_by_cytokines <- ScaleData(lesion_cluster_by_cytokines, features = ccls_ils_tnfs)
+#Run PCA
+lesion_cluster_by_cytokines <- RunPCA(lesion_cluster_by_cytokines, verbose = TRUE, features = ccls_ils_tnfs)
+#Visualise variability explained per PC
+ElbowPlot(lesion_cluster_by_cytokines)
+#identify neighbours in PC 1:cyto_dims dimensions
+lesion_cluster_by_cytokines <- FindNeighbors(lesion_cluster_by_cytokines, reduction = "pca", dims = 1:cyto_dims)
+#Identify clusters (Louvain)
+lesion_cluster_by_cytokines <- FindClusters(lesion_cluster_by_cytokines, verbose = TRUE, resolution = cyto_res)
+#Run UMAP using in PC 1:subclust_dims dimensions
+lesion_cluster_by_cytokines <- RunUMAP(lesion_cluster_by_cytokines, reduction = "pca", dims = 1:cyto_dims)
+#Run t-SNE using in PC 1:subclust_dims dimensions
+lesion_cluster_by_cytokines <- RunTSNE(lesion_cluster_by_cytokines, reduction = "pca", dims = 1:cyto_dims, check_duplicates=F)
+
+lesion_cluster_by_cytokines$cyto_cluster<-paste0("Cyto_",lesion_cluster_by_cytokines$seurat_clusters)
+#ordering names
+lesion_cluster_by_cytokines$cyto_cluster <- factor(lesion_cluster_by_cytokines$cyto_cluster,levels=c("Cyto_0","Cyto_1","Cyto_2","Cyto_3","Cyto_4","Cyto_5"))
+#setting main indetity per spot as cyto_cluster as defined based on cytokine-based clustering 
+Idents(lesion_cluster_by_cytokines)<-"cyto_cluster"
+
+saveRDS(lesion_cluster_by_cytokines, paste0(save_path,"lesion_core_cyto_only_dims_",cyto_dims,"_res_",cyto_res,".Rds"))
+```
+Read RDS if available
+```{r read_RDS_if_available}
+res=0.3
+dims=15
+integrated_LC_cohort1 <- readRDS(paste0(save_path, "partial_dims_",dims,"_res_",res,"_LC_cohort1.Rds"))
+subclust_dims <- 10
+subclust_res <- 0.2
+cluster2only <- readRDS(paste0(save_path, "lesion_core_dims_",subclust_dims,"_res_",subclust_res,".Rds"))
+cyto_dims=10
+cyto_res=0.5
+cluster2CytoOnly <- readRDS(paste0(save_path,"lesion_core_cyto_only_dims_",cyto_dims,"_res_",cyto_res,".Rds"))
+```
+
+

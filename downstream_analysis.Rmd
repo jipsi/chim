@@ -1,0 +1,290 @@
+ ---
+title: "SD22.8.6"
+author: "Shoumit Dey"
+date: "17/10/2023"
+output: html_document
+---
+1. Load packages
+2. Set paths
+```{r message=FALSE}
+#Load packages
+library(Seurat)
+library(EnhancedVolcano)
+library(sqldf)
+library(dplyr)
+#define study path
+save_path <- "D:/GoogleDrive/spatial_leishmania/spatial/_MANUSCRIPTS/CHIM1/GITHUB_PLAYGROUND/"#"Add your path here"
+setwd(save_path)
+
+if (!file.exists(paste0(getwd(), "/R"))){
+  dir.create(paste0(getwd(), "/R"))
+}
+
+save_path <- paste0(getwd(), "/R/")
+
+#create sub-directories
+if (!file.exists(paste0(save_path, "markers"))){
+  dir.create(paste0(save_path, "markers"))
+}
+dir.create(paste0(save_path, "markers"))
+
+```
+Load pre-processed objects
+```{r read_RDS_if_available}
+# Start the clock!
+ptm <- proc.time()
+#read files
+res=0.3
+dims=15
+integrated_LC_cohort1 <- readRDS(paste0(save_path, "partial_dims_",dims,"_res_",res,"_LC_cohort1.Rds"))
+subclust_dims <- 10
+subclust_res <- 0.2
+cluster2only <- readRDS(paste0(save_path, "lesion_core_dims_",subclust_dims,"_res_",subclust_res,".rds"))
+cyto_dims=10
+cyto_res=0.5
+cluster2CytoOnly <- readRDS(paste0(save_path,"lesion_core_cyto_only_dims_",cyto_dims,"_res_",cyto_res,".Rds"))
+# Stop the clock and print time taken
+time_taken<- proc.time() - ptm
+print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+```
+Plotting Figures 5a, b, c and d
+```{r plotting_umap_clusters}
+# Start the clock!
+ptm <- proc.time()
+#Plotting Figure 5b Extended Data Figure 8d-f
+pdf(paste0(save_path, "SpatialDimPlot_PC1to",dims,"res",res,".pdf"))
+  x<-SpatialDimPlot(integrated_LC_cohort1, image.alpha = 0, crop = FALSE, pt.size.factor = 1)
+  for(i in 1:12){
+    fig1<-x[[i]]
+    print(fig1)
+  }
+  rm(x)
+dev.off() 
+#Plotting Figure 5a, Extended Data Figure 8b and c
+pdf(paste0(save_path, "Figure 5a8bc.pdf"))
+  #Plotting Figure 5a
+  DimPlot(integrated_LC_cohort1, reduction = "tsne", split.by = "group")
+  #Plotting Extended Data Figure 8b
+  DimPlot(integrated_LC_cohort1, reduction = "tsne", label = TRUE) + NoLegend() 
+  #Plotting Extended Data Figure 8c
+  DimPlot(integrated_LC_cohort1, reduction = "tsne", group.by = "orig.ident")
+dev.off()
+#PLotting Figure 5b
+pdf(paste0(save_path, "Fig5b.pdf"), height = 5, width = 20)
+  SpatialDimPlot(integrated_LC_cohort1, images = "LC_403_1C2", crop = F, ncol = 2, image.alpha = 0)
+dev.off()
+#PLotting Figure 5c
+pdf(paste0(save_path, "Fig5c.pdf"), height = 5, width = 20)
+  SpatialFeaturePlot(integrated_LC_cohort1, images = "LC_403_1C2", features = c("KRT5","LOR","LYZ","S100A2"), crop = F, ncol = 2, image.alpha = 0, alpha = c(0,0.7), pt.size.factor = 1)
+dev.off()
+#PLotting Figure 5d
+pdf(paste0(save_path, "Fig5d.pdf"), height = 5, width = 20)
+  SpatialFeaturePlot(integrated_LC_cohort1, images = "LC_403_1C2", features = c("TNF","IFNG","IL10","IL1B"), crop = F, ncol = 2, image.alpha = 0, alpha = c(0,0.7), pt.size.factor = 1)
+dev.off()
+# Stop the clock and print time taken
+time_taken<- proc.time() - ptm
+print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+```
+DE BY SEURAT CLUSTERS (WILCOXON RANK SUM)
+```{r differential_expresion}
+# Start the clock!
+ptm <- proc.time()
+#If not pre-run already
+integrated_LC_cohort1 <- PrepSCTFindMarkers(integrated_LC_cohort1, assay = "SCT")
+#find markers - method Wilcoxon rank sum, looking at positive markers ie
+#upregulated genes in each cluster with a minimum number of spots expressing
+#the said gene as 25%. Log2fold change threshold at 0.25 
+all_markers <- FindAllMarkers(integrated_LC_cohort1, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, assay = "SCT")
+#save marker genes
+write.csv(all_markers, paste0(save_path, "/markers/","markers_dims",dims,"_res",res,".csv"), row.names = TRUE)
+#read marker genes
+all_markers <- read.csv(paste0(save_path, "/markers/","markers_dims",dims,"_res",res,".csv"), header = TRUE)
+#find markers bite site versus lesion 
+#Method: Wilcoxon rank sum, looking at positive markers ie
+#upregulated genes in each cluster with a minimum number of spots expressing
+#the said gene as 25%. Log2fold change threshold at 0.25 
+dermis7vs2 <- FindMarkers(integrated_LC_cohort1, ident.1 = c(7), ident.2 = c(2))
+#save marker genes
+write.csv(dermis7vs2, paste0(save_path, "/markers/biteVslesion.csv"), row.names = TRUE)
+#define a dataframe for volcano plot  
+df <- dermis7vs2
+#df$gene <- rownames(df)
+df$p_val <- NULL
+#reformat column names
+colnames(df) <- c("log2FoldChange","pct1","pct2","pvalue")
+#setting a very small number in lieu of zero p-value
+df$pvalue[df$pvalue==0]<-5e-305
+#adding gene names as rownames 
+df$gene <- rownames(df) 
+
+#Plotting figure 5e
+pdf(paste0(save_path, "Fig5E.pdf"), height = 12, width = 8)
+      print(EnhancedVolcano(df,
+                      lab = rownames(df),
+                      x = 'log2FoldChange',
+                      xlim = c(-1.5, 1.5),
+                      ylim = c(0,350),
+                      y = 'pvalue',
+                      title = "dermis7vs2",
+                      pCutoff = 10e-5,
+                      FCcutoff = 0.5,
+                      pointSize = 1,
+                      labSize = 5, 
+                      subtitle = "",
+                      drawConnectors = TRUE,
+                      widthConnectors = 0.25)
+  )
+dev.off()
+#Plotting Extended data figure 8a
+pdf(paste0(save_path, "heatmap_overall_clustering.pdf"), height = 10, width = 15)
+  DefaultAssay(integrated_LC_cohort1) <- "SCT"
+  integrated_LC_cohort1<-SetIdent(integrated_LC_cohort1, value = "seurat_clusters")
+  all_markers %>%
+      group_by(cluster) %>%
+      top_n(n = 5, wt = avg_log2FC) -> top5
+  DoHeatmap(integrated_LC_cohort1, features = top5$gene) + NoLegend()
+dev.off()
+#Plotting Extended data figure 9a & b
+pdf(paste0(save_path, "FigExtFig9ab_ifn_tnf_il_chem.pdf"), height = 5, width = 5)
+  DotPlot(integrated_LC_cohort1, features = sort(c(grep("^CCL", rownames(integrated_LC_cohort1),value = T), grep("^CXC", rownames(integrated_LC_cohort1),value = T))), group.by = "group", assay = "SCT") + coord_flip()
+  DotPlot(integrated_LC_cohort1, features = sort(c(grep("^TNF", rownames(integrated_LC_cohort1),value = T))), group.by = "group", assay = "SCT") + coord_flip()
+    DotPlot(integrated_LC_cohort1, features = sort(c(grep("^IL", rownames(integrated_LC_cohort1),value = T))), group.by = "group", assay = "SCT") + coord_flip()
+  DotPlot(integrated_LC_cohort1, features = sort(grep("^IFN", rownames(integrated_LC_cohort1),value = T)), group.by = "group", assay = "SCT") + coord_flip()
+dev.off()
+
+# Stop the clock and print time taken
+time_taken<- proc.time() - ptm
+print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+```
+
+```{r Fig6}
+# Start the clock!
+ptm <- proc.time()
+#PLotting Figure 6a
+pdf(paste0(save_path, "Fig6a.pdf"), height = 5, width = 20)
+  SpatialDimPlot(cluster2only, images = "LC_403_1C2", crop = F, ncol = 2, image.alpha = 0)
+dev.off()
+#PLotting Figure 6b
+pdf(paste0(save_path, "cluster2only_markers.pdf"), height = 3, width = 7)
+  DotPlot(cluster2only, features = c("CXCL9","CCL21","KRT1","CCL22","ACTA2","CCL19","IGKC","IGFBP7","GREM1","MMP2","PI16","COL1A1","FBP1","MT1G","NUPR1","CHI3L1"), group.by = "seurat_clusters", cols = c("grey","red")) + RotatedAxis()
+dev.off()
+#PLotting Figure 6c-f
+pdf(paste0(save_path, "Fig6cdef.pdf"), height = 5, width = 20)
+  SpatialFeaturePlot(integrated_LC_cohort1, images = "LC_403_1C2", features = c("CXCL9","CCL19","MMP2","CHI3L1"), crop = F, ncol = 4, image.alpha = 0, alpha = c(0,0.7), pt.size.factor = 1)
+dev.off()
+# Stop the clock and print time taken
+time_taken<- proc.time() - ptm
+print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+```
+
+Figure 6g,h,i&j
+```{r cytokine_cluster}
+# Start the clock!
+ptm <- proc.time()
+
+#Figure 6g
+pdf(paste0(save_path,"Fig6g.pdf"), width = 4, height = 3)
+  umap_ccls_ils_tnfs_by_group<-DimPlot(cluster2CytoOnly, reduction = "umap", label = F, split.by = "group", group.by = "cyto_cluster") + ggtitle(label = "")
+  print(umap_ccls_ils_tnfs_by_group)
+dev.off()  
+
+#data for Figure 6h
+table(cluster2CytoOnly$orig.ident, cluster2CytoOnly$cyto_cluster)
+prop.table(table(cluster2CytoOnly$orig.ident, cluster2CytoOnly$cyto_cluster), margin = 2)
+
+#Figure 6i
+pdf(paste0(save_path, "Fig6h.pdf"), height = 5, width = 7)
+  SpatialDimPlot(cluster2CytoOnly, images = "LC_403_1C2", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
+dev.off()
+
+#Switch to normalised assay for calucalting DE genes
+DefaultAssay(cluster2CytoOnly)<-"SCT"
+#Set idents as clusters obtained using cytokine etc genes
+#as described in prepare_rds.Rmd
+Idents(cluster2CytoOnly)<-"cyto_cluster"
+cluster2CytoOnly<-PrepSCTFindMarkers(cluster2CytoOnly)
+all_lesion_cyto_cluster_markers<-FindAllMarkers(cluster2CytoOnly, features = ccls_ils_tnfs)
+#markers saved here
+write.csv(all_lesion_cyto_cluster_markers,paste0(save_path,"markers/core_lesion_cyto_cluster_markers.csv"), row.names = F)
+#Cyto0:CCL18,CXCL13,CCL22,IL4I1
+#Cyto1:CXCL10,CXCL9,CXCL11,IL7R
+#Cyto2:CCL5,IL2RG,IL16,ILF3,CXCR3
+#Cyto3:'NA'
+#Cyto4:CXCL12,CXCL14,CCL19,CCL13
+#Cyto5:CXCL14,CXCL12
+
+#Figure 6j
+pdf(paste0(save_path,"Fig6j.pdf"), width = 7, height = 3)
+    DotPlot(cluster2CytoOnly, features = c("CCL18","CXCL13","CCL22","IL4I1","CXCL10","CXCL9","CXCL11","IL7R","CCL5","IL2RG","IL16","ILF3","CXCR3","CXCL12","CXCL14","CCL19","CCL13"), cols = c("grey","red")) + xlab(label = "") + ylab(label = "") + RotatedAxis()
+dev.off()
+# Stop the clock and print time taken
+time_taken<- proc.time() - ptm
+print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+```
+
+#Data generation for extended data figure 9c
+```{r correlations, warning=FALSE}
+# Start the clock!
+ptm <- proc.time()
+######
+#function correlation
+######
+fn_get_corr_mat <- function(obj, gene_name){
+  correlation_df_list<-list()
+
+
+  mat_count<-as.matrix(obj[['SCT']]@data)
+  #hardcoded as spearman change if required
+  type<-"spearman"
+
+  #get 'gene of interest' expression of all cells
+  count_gene<-mat_count[gene_name,]
+
+  correlation_mat<-matrix(nrow = dim(mat_count)[1], ncol = 2)
+  #add rownames
+  rownames(correlation_mat) <- rownames(mat_count)
+  # Create a nested loop
+  for(row in 1:nrow(mat_count)) {
+    correlation<-stats::cor.test(count_gene, mat_count[row,], method = type)
+    correlation_mat[row,1]<-correlation$estimate
+    correlation_mat[row,2]<-correlation$p.value
+  }
+  correlation_mat<-as.data.frame(correlation_mat)
+  colnames(correlation_mat)<-c("corr_estimate","pvalue")
+  correlation_mat$gene<-rownames(correlation_mat)
+  #discard pvalues greater than 0.05 and correlations below 0.1
+  correlation_df<-sqldf::sqldf("SELECT gene, corr_estimate, pvalue
+                                FROM correlation_mat
+                                WHERE pvalue < 0.05
+                                AND corr_estimate > 0.1
+                                ORDER BY corr_estimate DESC")
+
+  anti_correlation_df<-sqldf::sqldf("SELECT gene, corr_estimate, pvalue
+                                FROM correlation_mat
+                                WHERE pvalue < 0.05
+                                AND corr_estimate < -0.1
+                                ORDER BY corr_estimate ASC")
+  correlation_df_list[[paste0("corr_", gene_name)]]<-correlation_df
+  correlation_df_list[[paste0("acorr_", gene_name)]]<-anti_correlation_df
+  list_corr_mat <- correlation_df_list
+  return(list_corr_mat)
+}
+
+gene_name<-"CXCL9"
+
+integrated_LC_cohort1<-PrepSCTFindMarkers(integrated_LC_cohort1)
+
+list_corr_mat<-fn_get_corr_mat(integrated_LC_cohort1, gene_name)
+
+head(list_corr_mat[[paste0("corr_", gene_name)]],20)
+head(list_corr_mat[[paste0("acorr_", gene_name)]],20)
+
+write.table(list_corr_mat[[paste0("corr_", gene_name)]], file = paste0(save_path,"corr_",gene_name,".csv"), sep=",", row.names = FALSE)
+
+write.table(list_corr_mat[[paste0("acorr_", gene_name)]], file = paste0(save_path, "acorr_",gene_name,".csv"), sep=",", row.names = FALSE)
+
+rm(list_corr_mat)
+# Stop the clock and print time taken
+time_taken<- proc.time() - ptm
+print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+```
