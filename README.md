@@ -82,6 +82,7 @@ loaded via a namespace (and not attached):
 [113] munsell_0.5.0          viridisLite_0.4.1      tcltk_4.2.2   
 
 #### 4. RUNNING TIME: All R files run sequentially will take approximately 2 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
+All code files, directory structure and instructions are available at https://github.com/jipsi/chim/ 
 
 #### 5. Additional files required for running code available on [10.5281/zenodo.10018477](https://zenodo.org/records/10018477)
 
