@@ -93,6 +93,39 @@ All code files, directory structure and instructions are available at https://gi
 - PDF/CSV files are created within a folder named as 'R' or 'R\markers' in your working directory when the code is executed. If the folders are already present, the code will simply ignore it with a warning
 - This file will take approximately 10-15 minutes to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
+#### 6. Cell2location: Generating q05_cell_abundance_w_sf_barcoded.csv
+#### Cell2location v0.1 (https://cell2location.readthedocs.io/en/latest/) was run by following the instructions as per the tool's tutorial for [mapping lymph nodes](https://cell2location.readthedocs.io/en/latest/notebooks/cell2location_tutorial.html). The code was run on University of York's HPC, namely, Viking using GPU node with 1 GPU, 1 node utilising 40GB RAM in approximately 2.5 hours. 1 hour for reference modelling and 1.5 hours for modelling the spatial data to calculate cell abundances in Visium spots 
+- Cell2location was installed in its own environment as per the instructions in the link above
+- Annotated single cell data (10.1126/science.aba6500) and RAW spatial data (this study, GSE263298) was used as input to cell2location
+- Output was stored as a model.pt file and anndata file containing q05 abundances as metadata
+- Python scripts were submitted to a job manager (slurm) on the HPC as a shell script with the following batch parameters and script
+
+> #!/bin/bash
+> #SBATCH --job-name=XXXX
+> #SBATCH --mail-type=END
+> #SBATCH --mail-user=shoumit.dey@york.ac.uk
+> #SBATCH --ntasks=1
+> #SBATCH --cpus-per-task=1
+> #SBATCH --mem=40gb
+> #SBATCH --time=04:00:00
+> #SBATCH --output=sd22.5.1.log
+> #SBATCH --account=XXXX
+> #SBATCH --partition=gpu
+> #SBATCH --gres=gpu:1
+> 
+> module load system/CUDA/10.0.130
+> module load lang/Miniconda3/4.9.2
+> 
+> source activate cell2loc_env2
+> 
+> command -v python
+> 
+> python config.py
+> 
+> source deactivate
+- Python code used is available on request. Running this will require RAW data which will be available on publication.
+- integrated_downstream.Rmd file in this repository uses q05_cell_abundance_w_sf_barcoded.csv this to analyse cell type abundances in spatial spots
+
 ## License
 
 ### This project is covered under the <b>MIT License</b>.
