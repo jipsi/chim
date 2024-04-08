@@ -92,8 +92,8 @@ All code files, directory structure and instructions are available at https://gi
 
 #### 2. To see how the data is normalised, integrated and clustered please look at prepare_rds.Rmd. However the raw data will be made available upon publication but please use <b>'Option 2'</b> below and the rds file link below to load the integrated data for inspection, analysis or re-creating figures. All instructions and R source files (.Rmd files) are available at https://github.com/jipsi/chim 
 
-##### Option1 : Start from scratch using raw 10x files (CURRENTLY unavailable as RAW data will only be made available post publication)
-- Download all samples/10x files from GSMXXXX into V*/'sample_name'/
+##### Option1 : Start from scratch using raw 10x files (GSE record is currently private, but please contact the authors for access via a token. GSE record will be made public upon publication)
+- Download all samples/10x files from GSE263298 into V*/'sample_name'/ ie a folder named
 - Start with prepare_rds.Rmd
 - This file will take approximately 2 hours to run from start to finish on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 
