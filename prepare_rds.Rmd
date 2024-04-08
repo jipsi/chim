@@ -9,6 +9,7 @@ output: html_document
 ```{r message=FALSE}
 #Load packages
 library(Seurat)
+library(stats)
 #define study path
 save_path <- "Add your path here"
 setwd(save_path)

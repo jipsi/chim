@@ -1,7 +1,7 @@
  ---
 title: "SD22.8.6"
 author: "Shoumit Dey"
-date: "17/10/2023"
+date: "08/04/2024"
 output: html_document
 ---
 1. Load packages
@@ -12,8 +12,10 @@ library(Seurat)
 library(EnhancedVolcano)
 library(sqldf)
 library(dplyr)
+library(corrplot)
+library(reshape2)
 #define study path
-save_path <- "Add your path here"
+save_path <- "add/your/path/here"
 setwd(save_path)
 
 if (!file.exists(paste0(getwd(), "/R"))){
@@ -43,9 +45,11 @@ cluster2only <- readRDS(paste0(save_path, "lesion_core_dims_",subclust_dims,"_re
 cyto_dims=10
 cyto_res=0.5
 cluster2CytoOnly <- readRDS(paste0(save_path,"lesion_core_cyto_only_dims_",cyto_dims,"_res_",cyto_res,".Rds"))
+cluster2CytoOnly_meta <- data.frame(cluster2CytoOnly@meta.data[, c("cyto_cluster")],row.names = rownames(cluster2CytoOnly@meta.data))
 # Stop the clock and print time taken
 time_taken<- proc.time() - ptm
 print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
+
 ```
 Plotting Figures 5a, b, c and d
 ```{r plotting_umap_clusters}
@@ -70,16 +74,12 @@ pdf(paste0(save_path, "Figure 5a8bc.pdf"))
   DimPlot(integrated_LC_cohort1, reduction = "tsne", group.by = "orig.ident")
 dev.off()
 #PLotting Figure 5b
-pdf(paste0(save_path, "Fig5b.pdf"), height = 5, width = 20)
-  SpatialDimPlot(integrated_LC_cohort1, images = "LC_403_1C2", crop = F, ncol = 2, image.alpha = 0)
+pdf(paste0(save_path, "Fig5b.pdf"), height = 5, width = 15)
+  SpatialDimPlot(integrated_LC_cohort1, images = c("LC_403_1C2","LC_403_1L1"), crop = F, ncol = 2, image.alpha = 0)
 dev.off()
-#PLotting Figure 5c
+#PLotting Extended Data Figure 9a
 pdf(paste0(save_path, "Fig5c.pdf"), height = 5, width = 20)
-  SpatialFeaturePlot(integrated_LC_cohort1, images = "LC_403_1C2", features = c("KRT5","LOR","LYZ","S100A2"), crop = F, ncol = 2, image.alpha = 0, alpha = c(0,0.7), pt.size.factor = 1)
-dev.off()
-#PLotting Figure 5d
-pdf(paste0(save_path, "Fig5d.pdf"), height = 5, width = 20)
-  SpatialFeaturePlot(integrated_LC_cohort1, images = "LC_403_1C2", features = c("TNF","IFNG","IL10","IL1B"), crop = F, ncol = 2, image.alpha = 0, alpha = c(0,0.7), pt.size.factor = 1)
+  SpatialFeaturePlot(integrated_LC_cohort1, images = "LC_403_1C2", features = c("KRT5","LOR","LYZ","S100A2","TNF","IFNG","IL10","IL1B"), crop = F, ncol = 2, image.alpha = 0, alpha = c(0,0.7), pt.size.factor = 1)
 dev.off()
 # Stop the clock and print time taken
 time_taken<- proc.time() - ptm
@@ -106,19 +106,21 @@ all_markers <- read.csv(paste0(save_path, "/markers/","markers_dims",dims,"_res"
 dermis7vs2 <- FindMarkers(integrated_LC_cohort1, ident.1 = c(7), ident.2 = c(2))
 #save marker genes
 write.csv(dermis7vs2, paste0(save_path, "/markers/biteVslesion.csv"), row.names = TRUE)
+#read marker genes
+dermis7vs2 <- read.csv(paste0(save_path, "/markers/biteVslesion.csv"), header = TRUE)
 #define a dataframe for volcano plot  
 df <- dermis7vs2
 #df$gene <- rownames(df)
 df$p_val <- NULL
 #reformat column names
-colnames(df) <- c("log2FoldChange","pct1","pct2","pvalue")
+colnames(df) <- c("gene","log2FoldChange","pct1","pct2","pvalue")
 #setting a very small number in lieu of zero p-value
 df$pvalue[df$pvalue==0]<-5e-305
 #adding gene names as rownames 
 df$gene <- rownames(df) 
 
-#Plotting figure 5e
-pdf(paste0(save_path, "Fig5E.pdf"), height = 12, width = 8)
+#Plotting figure 5g
+pdf(paste0(save_path, "Fig5g.pdf"), height = 12, width = 8)
       print(EnhancedVolcano(df,
                       lab = rownames(df),
                       x = 'log2FoldChange',
@@ -143,13 +145,6 @@ pdf(paste0(save_path, "heatmap_overall_clustering.pdf"), height = 10, width = 15
       group_by(cluster) %>%
       top_n(n = 5, wt = avg_log2FC) -> top5
   DoHeatmap(integrated_LC_cohort1, features = top5$gene) + NoLegend()
-dev.off()
-#Plotting Extended data figure 9a & b
-pdf(paste0(save_path, "FigExtFig9ab_ifn_tnf_il_chem.pdf"), height = 5, width = 5)
-  DotPlot(integrated_LC_cohort1, features = sort(c(grep("^CCL", rownames(integrated_LC_cohort1),value = T), grep("^CXC", rownames(integrated_LC_cohort1),value = T))), group.by = "group", assay = "SCT") + coord_flip()
-  DotPlot(integrated_LC_cohort1, features = sort(c(grep("^TNF", rownames(integrated_LC_cohort1),value = T))), group.by = "group", assay = "SCT") + coord_flip()
-    DotPlot(integrated_LC_cohort1, features = sort(c(grep("^IL", rownames(integrated_LC_cohort1),value = T))), group.by = "group", assay = "SCT") + coord_flip()
-  DotPlot(integrated_LC_cohort1, features = sort(grep("^IFN", rownames(integrated_LC_cohort1),value = T)), group.by = "group", assay = "SCT") + coord_flip()
 dev.off()
 
 # Stop the clock and print time taken
@@ -177,24 +172,164 @@ time_taken<- proc.time() - ptm
 print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
 ```
 
+HEALTHY Vs LESION
+```{r selecting_healthy_spots}
+#barcode labels
+#"402_3C1","402_3C2","402_3L1-3","402_3R1-4","403_1C1","403_1C2","403_1L1-7","403_1L2-8","013_8C1", "013_8C2", "013_8L1-11", "013_8R1-12"
+
+healthy_1l1 <- read.csv(paste0(save_path, "1L1_healthy.csv"), header = T)
+healthy_1l1$Barcode <- paste0(healthy_1l1$Barcode, "_7")
+colnames(healthy_1l1) <- c("barcodes","spot_annot")
+
+healthy_1l2 <- read.csv(paste0(save_path, "1L2_healthy.csv"), header = T)
+healthy_1l2$Barcode <- paste0(healthy_1l2$Barcode, "_8")
+colnames(healthy_1l2) <- c("barcodes","spot_annot")
+
+healthy_3l1 <- read.csv(paste0(save_path, "3L1_healthy.csv"), header = T)
+healthy_3l1$Barcode <- paste0(healthy_3l1$Barcode, "_3")
+colnames(healthy_3l1) <- c("barcodes","spot_annot")
+
+healthy_3r1 <- read.csv(paste0(save_path, "3R1_healthy.csv"), header = T)
+healthy_3r1$Barcode <- paste0(healthy_3r1$Barcode, "_4")
+colnames(healthy_3r1) <- c("barcodes","spot_annot")
+
+healthy_8l1 <- read.csv(paste0(save_path, "8L1_healthy.csv"), header = T)
+healthy_8l1$Barcode <- paste0(healthy_8l1$Barcode, "_11")
+colnames(healthy_8l1) <- c("barcodes","spot_annot")
+
+healthy_8r1 <- read.csv(paste0(save_path, "8R1_healthy.csv"), header = T)
+healthy_8r1$Barcode <- paste0(healthy_8r1$Barcode, "_12")
+colnames(healthy_8r1) <- c("barcodes","spot_annot")
+
+all_healthy_spots <- rbind(healthy_1l1, healthy_1l2, healthy_3l1, healthy_3r1, healthy_8l1, healthy_8r1)
+colnames(all_healthy_spots) <- c("barcodes","lesion_health")
+
+meta_current <- integrated_LC_cohort1@meta.data
+meta_current$barcodes <- rownames(meta_current)
+
+meta_minus_all_healthy <- subset(meta_current, subset = !barcodes %in% all_healthy_spots$barcodes)
+meta_minus_all_healthy$lesion_health <- as.character(meta_minus_all_healthy$group)
+meta_minus_all_healthy$lesion_health[meta_minus_all_healthy$lesion_health == "healthy"] <- "adjacent"
+meta_minus_all_healthy <- meta_minus_all_healthy[, c("barcodes","lesion_health")]
+
+new_meta <- rbind(all_healthy_spots, meta_minus_all_healthy)
+rownames(new_meta) <- new_meta$barcodes
+
+integrated_LC_cohort1 <- AddMetaData(integrated_LC_cohort1, metadata = new_meta)
+#use this for cytokine clusters
+meta_health <- data.frame(integrated_LC_cohort1$lesion_health)
+
+pdf(paste0(save_path, "re_drawn_healthy_vs_lesion_annotation.pdf"), height = 10, width=15)
+  SpatialDimPlot(integrated_LC_cohort1, group.by = "lesion_health", ncol = 4, crop = F, pt.size.factor = 1.5)
+dev.off()
+
+
+Idents(integrated_LC_cohort1) <- "lesion_health"
+
+reduced_integrated_LC_cohort1 <- subset(integrated_LC_cohort1, subset = lesion_health == "adjacent", invert=T)
+
+###fetch seurat cluster colours
+p <- DimPlot(reduced_integrated_LC_cohort1) # Generate the tSNE plot, but save it as an object
+pbuild <- ggplot2::ggplot_build(p) # Use ggplot_build to deconstruct the ggplot object
+pdata <- pbuild$data[[1]] # Pull the data used for the plot
+pdata <-  pdata[order(pdata$group), ] # Order the plot data by group
+ucols <- unique(pdata$colour) # Get a vector of unique colors
+names(ucols) <- unique(pdata$group) # Add the groups to the vector of colors as names
+
+
+lesion_health_prop_by_cluster <- prop.table(table(reduced_integrated_LC_cohort1$integrated_snn_res.0.3, reduced_integrated_LC_cohort1$lesion_health), margin = 2)
+lesion_health_prop_by_cluster
+
+samples_prop_by_cluster <- prop.table(table(reduced_integrated_LC_cohort1$orig.ident, reduced_integrated_LC_cohort1$integrated_snn_res.0.3), margin = 2)
+samples_prop_by_cluster
+
+pdf(paste0(save_path, "new_Fig5d.pdf"), height = 10, width=5)
+  barplot(lesion_health_prop_by_cluster, 
+          col=ucols , 
+          border="white", 
+          space=0.04, 
+          font.axis=2)
+  p
+dev.off()
+
+ccls_ils_tnfs<-c(grep("^CCL", rownames(reduced_integrated_LC_cohort1),value = T), grep("^CXC", rownames(reduced_integrated_LC_cohort1),value = T), grep("^TNF", rownames(reduced_integrated_LC_cohort1),value = T), grep("^IL", rownames(reduced_integrated_LC_cohort1),value = T), grep("^IFN", rownames(reduced_integrated_LC_cohort1),value = T))
+
+reduced_integrated_LC_cohort1 <- PrepSCTFindMarkers(reduced_integrated_LC_cohort1, assay = "SCT")
+Idents(reduced_integrated_LC_cohort1) <- "lesion_health"
+all_lesion_health_markers <- FindAllMarkers(reduced_integrated_LC_cohort1, min.pct = 0.25, logfc.threshold = 0.25, assay = "SCT", features = ccls_ils_tnfs)
+Idents(integrated_LC_cohort1) <- "integrated_snn_res.0.3"
+integrated_LC_cohort1 <- PrepSCTFindMarkers(integrated_LC_cohort1, assay = "SCT")
+all_cyto_lesioncore_bite_markers <- FindMarkers(integrated_LC_cohort1, ident.1 = "2",ident.2 = "7", min.pct = 0.25, logfc.threshold = 0.25, assay = "SCT", features = ccls_ils_tnfs)
+
+Idents(reduced_integrated_LC_cohort1) <- "integrated_snn_res.0.3"
+
+
+pdf(paste0(save_path, "new_ExtData10_health_lesion.pdf"), height = 4, width=6)
+  DotPlot(reduced_integrated_LC_cohort1, features = unique(all_lesion_health_markers$gene), group.by = "lesion_health", assay = "SCT") + coord_flip()
+dev.off()
+pdf(paste0(save_path, "new_ExtData10_bite_lesion.pdf"), height = 8, width=6)
+  DotPlot(integrated_LC_cohort1, features = rownames(all_cyto_lesioncore_bite_markers), group.by = "seurat_clusters", assay = "SCT", idents = c(2,7)) + coord_flip()
+dev.off()
+```
+
+
+
+
 Figure 6g,h,i&j
 ```{r cytokine_cluster}
 # Start the clock!
 ptm <- proc.time()
 
 #Figure 6g
-pdf(paste0(save_path,"Fig6g.pdf"), width = 4, height = 3)
-  umap_ccls_ils_tnfs_by_group<-DimPlot(cluster2CytoOnly, reduction = "umap", label = F, split.by = "group", group.by = "cyto_cluster") + ggtitle(label = "")
+#Include meta data information here
+cluster2CytoOnly<-AddMetaData(cluster2CytoOnly, metadata = meta_health)
+cluster2CytoOnly_health_lesion <- subset(cluster2CytoOnly, subset = integrated_LC_cohort1.lesion_health == "adjacent", invert = T)
+pdf(paste0(save_path,"Fig6g_new.pdf"), width = 4, height = 3)
+  umap_ccls_ils_tnfs_by_group<-DimPlot(cluster2CytoOnly_health_lesion, reduction = "umap", label = F, split.by = "integrated_LC_cohort1.lesion_health", group.by = "cyto_cluster") + ggtitle(label = "")
   print(umap_ccls_ils_tnfs_by_group)
 dev.off()  
 
-#data for Figure 6h
-table(cluster2CytoOnly$orig.ident, cluster2CytoOnly$cyto_cluster)
-prop.table(table(cluster2CytoOnly$orig.ident, cluster2CytoOnly$cyto_cluster), margin = 2)
+#Figure 6h
+
+###fetch seurat cluster colours
+p <- DimPlot(cluster2CytoOnly_health_lesion) # Generate the tSNE plot, but save it as an object
+pbuild <- ggplot2::ggplot_build(p) # Use ggplot_build to deconstruct the ggplot object
+pdata <- pbuild$data[[1]] # Pull the data used for the plot
+pdata <-  pdata[order(pdata$group), ] # Order the plot data by group
+ucols <- unique(pdata$colour) # Get a vector of unique colors
+names(ucols) <- unique(pdata$group) # Add the groups to the vector of colors as names
+
+
+table(cluster2CytoOnly_health_lesion$integrated_LC_cohort1.lesion_health, cluster2CytoOnly_health_lesion$cyto_cluster)
+lesion_health_prop_by_cyto_cluster<-prop.table(table(cluster2CytoOnly_health_lesion$cyto_cluster,cluster2CytoOnly_health_lesion$integrated_LC_cohort1.lesion_health), margin = 2)
+orig_prop_by_cyto_cluster<-prop.table(table(cluster2CytoOnly_health_lesion$cyto_cluster,cluster2CytoOnly_health_lesion$orig.ident), margin = 2)
+
+# samples_prop_by_cluster <- prop.table(table(reduced_integrated_LC_cohort1$orig.ident, reduced_integrated_LC_cohort1$integrated_snn_res.0.3), margin = 2)
+# samples_prop_by_cluster
+
+pdf(paste0(save_path, "new_Fig6h.pdf"), height = 10, width=5)
+  barplot(lesion_health_prop_by_cyto_cluster, 
+          col=ucols , 
+          border="white", 
+          space=0.04, 
+          font.axis=2)
+  barplot(orig_prop_by_cyto_cluster, 
+        col=ucols , 
+        border="white", 
+        space=0.04, 
+        font.axis=2)
+  p
+dev.off()
+################################
 
 #Figure 6i
-pdf(paste0(save_path, "Fig6h.pdf"), height = 5, width = 7)
+pdf(paste0(save_path, "Fig6i.pdf"), height = 5, width = 7)
+  SpatialDimPlot(cluster2CytoOnly, images = "LC_403_1C1", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
   SpatialDimPlot(cluster2CytoOnly, images = "LC_403_1C2", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
+  SpatialDimPlot(cluster2CytoOnly, images = "LC_402_3C1", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
+  SpatialDimPlot(cluster2CytoOnly, images = "LC_402_3C2", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
+  SpatialDimPlot(cluster2CytoOnly, images = "LC_013_8C1", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
+  SpatialDimPlot(cluster2CytoOnly, images = "LC_013_8C2", crop = F, ncol = 1, image.alpha = 0.6, group.by = "cyto_cluster", pt.size.factor = 1.2)
 dev.off()
 
 #Switch to normalised assay for calucalting DE genes
@@ -288,3 +423,163 @@ rm(list_corr_mat)
 time_taken<- proc.time() - ptm
 print(paste0("Time elapsed: ", sprintf((time_taken[3]/60), fmt = '%#.2f')," minutes"))
 ```
+
+
+CELL2LOCATION BEGINS##############################################################
+
+```{r add cell2location information to metadata}
+cell2location_abundances <- read.csv(paste0(save_path, "q05_cell_abundance_w_sf_barcoded.csv"))
+rownames(cell2location_abundances)<-cell2location_abundances$spot_id
+# [1] "spot_id"             "DC1"                 "DC2"                
+#  [4] "DifferentiatedKC"    "DifferentiatedKC_"   "F1"                 
+#  [7] "F2"                  "F3"                  "ILC13"              
+# [10] "ILC1NK"              "ILC2"                "Infmono"            
+# [13] "LC1"                 "LC2"                 "LC3"                
+# [16] "LC4"                 "LE1"                 "LE2"                
+# [19] "Macro1"              "Macro2"              "Mastcell"           
+# [22] "Melanocyte"          "MigDC"               "Mono"               
+# [25] "NK"                  "Pericyte1noninflamm" "Pericyte2inflamm"   
+# [28] "Plasma"              "ProliferatingKC"     "Schwann1"           
+# [31] "Schwann2"            "Tc"                  "Th"                 
+# [34] "Treg"                "UndifferentiatedKC_" "VE1"                
+# [37] "VE2"                 "VE3"                 "moDC1"              
+# [40] "moDC2"               "moDC3"  
+cell_types<-colnames(cell2location_abundances)
+cell_types<-cell_types[2:length(cell_types)]
+
+df<-cell2location_abundances[,cell_types]#_thresholded
+
+# calculate the maximum of each column - Not applicable for this dataset
+df_max <- apply(df, 2, max)
+#df_max <- colMaxs(df) requires a package
+#df_median <- apply(df, 2, median)
+#df_3rd_quantile <- apply(df, 2, function(x) quantile(x, probs = 0.75,na.rm = T))
+
+# sort the dataframe based on the mean values
+#df_sorted <- df[, order(df_max, decreasing = T)]
+df_sorted <- df[, order(df_max, decreasing = T)]
+df_melt <- melt(df_sorted)
+
+#pdf(paste0(save_path, "sorted_all_box_cell2space_sd22.2.1.pdf"), height = 10, width=7)
+  ggplot(data = df_melt, aes(x = value, y = variable, fill = variable)) + 
+        geom_boxplot() + 
+        coord_flip()  + 
+        theme_classic() + 
+        theme(legend.position="none", axis.text.x = element_text(angle = 90, hjust = 1)) +
+        geom_vline(aes(xintercept = quantile(df_max, probs = 0.25,na.rm = T)), col = "red", size = 0.3) +
+        ylab(label = "") +
+        xlab(label = "Cell2Location q05 abundances")
+#dev.off() 
+#threshold abundances
+subset_df_max <- subset(df_max, df_max>quantile(df_max, probs = 0.25,na.rm = T))
+#subset_df_median <- subset(df_median, df_median>mean(df_median))
+#subset_df_3rd_quantile <- subset(df_3rd_quantile, df_3rd_quantile>mean(df_3rd_quantile))
+
+######run when not thresholding
+#cell2location_abundances <- cell2location_abundances[, cell_types]
+#####
+#already stored in the rds. Only uncomment when running all over again
+#integrated_LC_cohort1<-AddMetaData(integrated_LC_cohort1, metadata = cell2location_abundances_thresholded)
+# cluster2only <- AddMetaData(cluster2only, metadata = cell2location_abundances_thresholded)
+# cluster7only <-  AddMetaData(cluster7only, metadata = cell2location_abundances_thresholded)
+#write.csv(integrated_LC_cohort1@meta.data[, c("integrated_snn_res.0.3", cell_types)], paste0(save_path, "sd22.2.1_cell2location_abundances_by_cluster.csv"))
+
+sd22.2.1_cell2location_abundances_by_cluster <- integrated_LC_cohort1@meta.data[, c("integrated_snn_res.0.3", cell_types)]
+
+avg_sd22.2.1_cell2location_abundances_by_cluster <- aggregate(x= sd22.2.1_cell2location_abundances_by_cluster[, cell_types],
+                                                    # Specify group indicator
+                                                    by = list(sd22.2.1_cell2location_abundances_by_cluster$integrated_snn_res.0.3),      
+                                                    # Specify function (i.e. mean)
+                                                    FUN = mean)
+print(avg_sd22.2.1_cell2location_abundances_by_cluster)
+
+#write.csv(avg_sd22.2.1_cell2location_abundances_by_cluster, paste0(save_path, "sd22.2.1_cell2location_abundances_by_cluster_AVERAGED.csv"))
+
+
+```
+
+
+```{r sorted_box_plots}
+lesion_core_celltypes <- c("DC2","Tc","Treg","Melanocyte","Mono","Macro2","LC1","F2","Th","F3","DifferentiatedKC","Macro1","MigDC","DifferentiatedKC.","ILC13","Pericyte2inflamm","F1","Pericyte1noninflamm","ILC1NK","VE1")
+
+integrated_LC_cohort1<-SetIdent(integrated_LC_cohort1, value = "seurat_clusters")
+for(identity in c("2","7")){
+  obj<-subset(integrated_LC_cohort1, idents = identity)
+  df<-obj@meta.data[,cell_types]
+  
+  # calculate the maximum of each column - Not applicable for this dataset
+  #df_max <- apply(df, 2, max)
+  #df_max <- colMaxs(df) requires a package
+  df_median <- apply(df, 2, median)
+  #df_3rd_quantile <- apply(df, 2, function(x) quantile(x, probs = 0.75,na.rm = T))
+  
+  # sort the dataframe based on the mean values
+  #df_sorted <- df[, order(df_max, decreasing = T)]
+  df_sorted <- df[, order(df_median, decreasing = T)]
+  df_melt <- melt(df_sorted)
+  
+  pdf(paste0(save_path,"cluster_",identity, "_sorted_all_box_cell2space_sd22.2.1.pdf"), height = 10, width=7)
+    plot_cluster  <- ggplot(data = df_melt, aes(x = value, y = variable, fill = variable)) + 
+            geom_boxplot() + 
+            coord_flip()  + 
+            theme_classic() + 
+            theme(legend.position="none", axis.text.x = element_text(angle = 90, hjust = 1)) +
+            geom_vline(aes(xintercept = quantile(df_median, probs = 0.25,na.rm = T)), col = "red", size = 0.3) +
+            scale_x_continuous(limits=c(0, 40), breaks=c(0,10, 20, 30, 40)) +
+            ylab(label = "") +
+            xlab(label = "Cell2Location q05 abundances")
+    print(plot_cluster)
+  dev.off() 
+  rm(obj)
+}
+
+```
+
+
+
+```{r corrplot}
+#significance
+cor.mtest <- function(mat, ...) {
+    mat <- as.matrix(mat)
+    n <- ncol(mat)
+    p.mat<- matrix(NA, n, n)
+    diag(p.mat) <- 0
+    for (i in 1:(n - 1)) {
+        for (j in (i + 1):n) {
+            tmp <- cor.test(mat[, i], mat[, j], ...)
+            p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
+        }
+    }
+  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
+  p.mat
+}
+integrated_LC_cohort1_cluster2 <- subset(integrated_LC_cohort1, subset = integrated_snn_res.0.3 == "2")
+cell2location_abundances_cluster2<-integrated_LC_cohort1_cluster2@meta.data[, lesion_core_celltypes]
+cell2location_abundances_cluster2_corr <- cor(cell2location_abundances_cluster2)
+# matrix of the p-value of the correlation
+p.mat <- cor.mtest(cell2location_abundances_cluster2)
+
+
+pdf(paste0(save_path, "FIG5f_cell2space_sd22.2.1_LESION_CORE_spot_correlation.pdf"), height = 10, width=15)
+  corrplot(cell2location_abundances_cluster2_corr, type = "upper", 
+           p.mat = p.mat, sig.level = 0.05, insig = "blank", tl.col="black", tl.srt=45,
+           order="hclust")
+  corrplot(cell2location_abundances_cluster2_corr, type = "lower", 
+           p.mat = p.mat, sig.level = 0.05, insig = "blank", tl.col="black", tl.srt=45,
+           order="hclust")
+dev.off()  
+```
+
+
+```{r spatial_maps}
+pdf(paste0(save_path, "For_Extended_Data_9b_cell2space_sd22.2.1.pdf"), height = 9, width=15)
+  for(image_count in 1:length(integrated_LC_cohort1@images)){
+    image<-names(integrated_LC_cohort1@images)[image_count]
+    print(SpatialFeaturePlot(integrated_LC_cohort1, features = head(lesion_core_celltypes,10), image.alpha = 0, pt.size.factor = 2, alpha = c(0.1,2), images =image, ncol = 5))
+    print(SpatialFeaturePlot(integrated_LC_cohort1, features = tail(lesion_core_celltypes,10), image.alpha = 0, pt.size.factor = 2, alpha = c(0.1,2), images = image, ncol = 5))
+  }
+dev.off()
+```
+
+
+
