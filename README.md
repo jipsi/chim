@@ -38,48 +38,37 @@ Running under: Windows 10 x64 (build 19045)
 Matrix products: default
 
 locale:
-[1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8   
-[3] LC_MONETARY=English_United Kingdom.utf8 LC_NUMERIC=C                           
-[5] LC_TIME=English_United Kingdom.utf8    
+[1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8    LC_MONETARY=English_United Kingdom.utf8
+[4] LC_NUMERIC=C                            LC_TIME=English_United Kingdom.utf8    
 
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] dplyr_1.0.10           sqldf_0.4-11           RSQLite_2.2.20         gsubfn_0.7            
- [5] proto_1.0.0            EnhancedVolcano_1.16.0 ggrepel_0.9.2          ggplot2_3.4.2         
- [9] SeuratObject_4.1.3     Seurat_4.3.0          
+ [1] reshape2_1.4.4         corrplot_0.92          dplyr_1.0.10           sqldf_0.4-11           RSQLite_2.2.20         gsubfn_0.7            
+ [7] proto_1.0.0            EnhancedVolcano_1.16.0 ggrepel_0.9.2          ggplot2_3.4.2          SeuratObject_4.1.3     Seurat_4.3.0          
 
 loaded via a namespace (and not attached):
-  [1] Rtsne_0.16             colorspace_2.0-3       deldir_1.0-6           ellipsis_0.3.2        
-  [5] ggridges_0.5.4         rstudioapi_0.14        spatstat.data_3.0-0    farver_2.1.1          
-  [9] leiden_0.4.3           listenv_0.9.0          bit64_4.0.5            fansi_1.0.3           
- [13] codetools_0.2-18       splines_4.2.2          cachem_1.0.6           knitr_1.41            
- [17] polyclip_1.10-4        jsonlite_1.8.4         ica_1.0-3              cluster_2.1.4         
- [21] png_0.1-8              uwot_0.1.14            shiny_1.7.4            sctransform_0.3.5     
- [25] spatstat.sparse_3.0-0  compiler_4.2.2         httr_1.4.6             Matrix_1.5-3          
- [29] fastmap_1.1.0          lazyeval_0.2.2         limma_3.54.0           cli_3.6.0             
- [33] later_1.3.0            htmltools_0.5.4        tools_4.2.2            igraph_1.3.5          
- [37] gtable_0.3.1           glue_1.6.2             RANN_2.6.1             reshape2_1.4.4        
- [41] Rcpp_1.0.9             scattermore_0.8        vctrs_0.5.1            nlme_3.1-161          
- [45] spatstat.explore_3.0-5 progressr_0.13.0       lmtest_0.9-40          spatstat.random_3.0-1 
- [49] xfun_0.36              stringr_1.5.0          globals_0.16.2         mime_0.12             
- [53] miniUI_0.1.1.1         lifecycle_1.0.3        irlba_2.3.5.1          goftest_1.2-3         
- [57] future_1.30.0          MASS_7.3-58.1          zoo_1.8-11             scales_1.2.1          
- [61] promises_1.2.0.1       spatstat.utils_3.0-1   parallel_4.2.2         RColorBrewer_1.1-3    
- [65] yaml_2.3.6             memoise_2.0.1          reticulate_1.27        pbapply_1.6-0         
- [69] gridExtra_2.3          stringi_1.7.8          chron_2.3-58           rlang_1.1.1           
- [73] pkgconfig_2.0.3        matrixStats_0.63.0     evaluate_0.19          lattice_0.20-45       
- [77] tensor_1.5             ROCR_1.0-11            purrr_1.0.0            labeling_0.4.2        
- [81] patchwork_1.1.2        htmlwidgets_1.6.1      cowplot_1.1.1          bit_4.0.5             
- [85] tidyselect_1.2.0       parallelly_1.33.0      RcppAnnoy_0.0.20       plyr_1.8.8            
- [89] magrittr_2.0.3         R6_2.5.1               generics_0.1.3         DBI_1.1.3             
- [93] withr_2.5.0            pillar_1.9.0           fitdistrplus_1.1-8     abind_1.4-5           
- [97] survival_3.5-0         sp_1.5-1               tibble_3.1.8           future.apply_1.10.0   
-[101] KernSmooth_2.23-20     utf8_1.2.2             spatstat.geom_3.0-3    plotly_4.10.1         
-[105] rmarkdown_2.19         grid_4.2.2             data.table_1.14.6      blob_1.2.3            
-[109] digest_0.6.31          xtable_1.8-4           tidyr_1.2.1            httpuv_1.6.7          
-[113] munsell_0.5.0          viridisLite_0.4.1      tcltk_4.2.2   
+  [1] Rtsne_0.16             colorspace_2.0-3       deldir_1.0-6           ellipsis_0.3.2         ggridges_0.5.4         rstudioapi_0.14       
+  [7] spatstat.data_3.0-0    farver_2.1.1           leiden_0.4.3           listenv_0.9.0          bit64_4.0.5            fansi_1.0.3           
+ [13] codetools_0.2-18       splines_4.2.2          cachem_1.0.6           knitr_1.41             polyclip_1.10-4        jsonlite_1.8.4        
+ [19] ica_1.0-3              cluster_2.1.4          png_0.1-8              uwot_0.1.14            shiny_1.7.4            sctransform_0.3.5     
+ [25] spatstat.sparse_3.0-0  compiler_4.2.2         httr_1.4.6             Matrix_1.5-3           fastmap_1.1.0          lazyeval_0.2.2        
+ [31] limma_3.54.0           cli_3.6.0              later_1.3.0            htmltools_0.5.4        tools_4.2.2            igraph_1.3.5          
+ [37] gtable_0.3.1           glue_1.6.2             RANN_2.6.1             Rcpp_1.0.9             scattermore_0.8        vctrs_0.5.1           
+ [43] nlme_3.1-161           spatstat.explore_3.0-5 progressr_0.13.0       lmtest_0.9-40          spatstat.random_3.0-1  xfun_0.36             
+ [49] stringr_1.5.0          globals_0.16.2         mime_0.12              miniUI_0.1.1.1         lifecycle_1.0.3        irlba_2.3.5.1         
+ [55] goftest_1.2-3          future_1.30.0          MASS_7.3-58.1          zoo_1.8-11             scales_1.2.1           promises_1.2.0.1      
+ [61] spatstat.utils_3.0-1   parallel_4.2.2         RColorBrewer_1.1-3     yaml_2.3.6             memoise_2.0.1          reticulate_1.27       
+ [67] pbapply_1.6-0          gridExtra_2.3          stringi_1.7.8          BiocParallel_1.32.5    chron_2.3-58           rlang_1.1.1           
+ [73] pkgconfig_2.0.3        matrixStats_0.63.0     evaluate_0.19          lattice_0.20-45        ROCR_1.0-11            purrr_1.0.0           
+ [79] tensor_1.5             labeling_0.4.2         patchwork_1.1.2        htmlwidgets_1.6.1      cowplot_1.1.1          bit_4.0.5             
+ [85] tidyselect_1.2.0       parallelly_1.33.0      RcppAnnoy_0.0.20       plyr_1.8.8             magrittr_2.0.3         R6_2.5.1              
+ [91] generics_0.1.3         DBI_1.1.3              withr_2.5.0            pillar_1.9.0           fitdistrplus_1.1-8     survival_3.5-0        
+ [97] abind_1.4-5            sp_1.5-1               tibble_3.1.8           future.apply_1.10.0    crayon_1.5.2           KernSmooth_2.23-20    
+[103] utf8_1.2.2             spatstat.geom_3.0-3    plotly_4.10.1          rmarkdown_2.19         grid_4.2.2             data.table_1.14.6     
+[109] blob_1.2.3             digest_0.6.31          xtable_1.8-4           tidyr_1.2.1            httpuv_1.6.7           munsell_0.5.0         
+[115] viridisLite_0.4.1      tcltk_4.2.2 
 
 #### 4. RUNNING TIME: All R files run sequentially will take approximately 2 hours to run on a windows computer with 64GB RAM on a 8 core 3.00GHz machine (eg. processor Intel(R) Core(TM) i7-9700 CPU)
 All code files, directory structure and instructions are available at https://github.com/jipsi/chim/ 
