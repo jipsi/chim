@@ -17,8 +17,9 @@ Alison M. Layton<sup>1,3,^</sup> and Paul M. Kaye<sup>1,3,^</sup>
 <br>
 ### Summary: <br>
 The leishmaniases are globally important parasitic diseases for which no human vaccines are currently available. To facilitate vaccine development, we established a controlled human infection model of sand fly-transmitted cutaneous leishmaniasis caused by L. major. The primary objective was to demonstrate effectiveness (attack rate) and safety, whereas secondary objectives focused on defining immune responses in the developing lesion. We exposed 14 participants to infected sand flies and estimated an attack rate of 64%, rising to 82% for participants with confirmed bites. Lesion development was terminated by therapeutic biopsy, with three participants receiving adjunctive cryotherapy. No severe or serious adverse events were recorded, and all participants were lesion-free at long-term (>12 month) follow up.  Analysis of skin biopsies using spatial transcriptomics generated the first comprehensive map of cytokine/chemokine expression in human CL lesions, revealing discrete immune niches.  This controlled human infection model offers opportunities for rapid vaccine candidate selection and a greater understanding of immune-mediated protection and pathology.<br>
-
-#Now published in Nature Medicine - 	https://www.nature.com/articles/s41591-024-03146-9
+<br>
+<br>
+#Read the paper in Nature Medicine - 	https://www.nature.com/articles/s41591-024-03146-9
 
 ## Software requirements: <br/>
 
